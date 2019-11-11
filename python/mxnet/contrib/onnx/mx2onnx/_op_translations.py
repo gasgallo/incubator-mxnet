@@ -259,11 +259,19 @@ def convert_crop(node, **kwargs):
     name, inputs, attrs = get_inputs(node, kwargs)
     num_inputs = len(inputs)
 
+#     axis = [2, 3]
     y, x = list(parse_helper(attrs, "offset", [0, 0]))
+#     starts = np.array([y, x], dtype=np.int64)
     h, w = list(parse_helper(attrs, "h_w", [0, 0]))
-    if num_inputs > 1:
-        h, w = kwargs["out_shape"][-2:]
-    border = [x, y, x + w, y + h]
+#     if num_inputs > 1:
+#         h, w = kwargs["out_shape"][-2:]
+#     border = [x, y, x + w, y + h]
+    if name == "crop0":
+#         ends = np.array([40, 40], dtype=np.int64)
+        border = [x, y, x + 40, y + 40]
+    elif name == "crop1":
+#         ends = np.array([80, 80], dtype=np.int64)
+        border = [x, y, x + 80, y + 80]
 
     crop_node = onnx.helper.make_node(
         "Crop",
@@ -273,6 +281,13 @@ def convert_crop(node, **kwargs):
         scale=[1, 1],
         name=name
     )
+
+#     crop_node = onnx.helper.make_node(
+#         "Slice",
+#         inputs=[inputs],
+#         outputs=[name],
+#         name=name
+#     )
 
     logging.warning(
         "Using an experimental ONNX operator: Crop. " \
